@@ -16,22 +16,19 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    if (selectedDates[0] < new Date()) {
-      window.alert('Please choose a date in the future');
-    } else if (selectedDates[0] > new Date()) {
-      refs.btnStart.disabled = false;
-    }
     refs.btnStart.addEventListener('click', () => {
       refs.btnStart.disabled = true;
       onClickStartTimer = setInterval(() => {
         const allDay = selectedDates[0] - new Date();
         const time = convertMs(allDay);
         onStartValue(time);
-        if (selectedDates[0] === new Date()) {
-          clearInterval(onClickStartTimer);
-        }
       }, 1000);
     });
+    if (selectedDates[0] < new Date()) {
+      window.alert('Please choose a date in the future');
+    } else if (selectedDates[0] > new Date()) {
+      refs.btnStart.disabled = false;
+    }
   },
 };
 
@@ -50,10 +47,19 @@ function convertMs(ms) {
   const hour = minute * 60;
   const day = hour * 24;
 
-  const days = Math.floor(ms / day);
-  const hours = Math.floor((ms % day) / hour);
-  const minutes = Math.floor(((ms % day) % hour) / minute);
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-
+  const days = addLeadingZero(Math.floor(ms / day));
+  const hours = addLeadingZero(Math.floor((ms % day) / hour));
+  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
+  const seconds = addLeadingZero(
+    Math.floor((((ms % day) % hour) % minute) / second)
+  );
   return { days, hours, minutes, seconds };
 }
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
+}
+
+// function stopTimer() {
+//   clearInterval(onClickStartTimer);
+// }
