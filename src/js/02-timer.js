@@ -7,28 +7,36 @@ const refs = {
   minutes: document.querySelector('[data-minutes]'),
   seconds: document.querySelector('[data-seconds]'),
 };
-refs.btnStart.disabled = true;
 let onClickStartTimer = null;
-
+refs.btnStart.disabled = true;
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
+    if (selectedDates[0] < new Date()) {
+      refs.btnStart.disabled = true;
+      window.alert('Please choose a date in the future');
+    } else {
+      refs.btnStart.disabled = false;
+    }
     refs.btnStart.addEventListener('click', () => {
       refs.btnStart.disabled = true;
       onClickStartTimer = setInterval(() => {
         const allDay = selectedDates[0] - new Date();
         const time = convertMs(allDay);
         onStartValue(time);
+        if (
+          refs.days.textContent === '00' &&
+          refs.hours.textContent === '00' &&
+          refs.minutes.textContent === '00' &&
+          refs.seconds.textContent === '00'
+        ) {
+          clearInterval(onClickStartTimer);
+        }
       }, 1000);
     });
-    if (selectedDates[0] < new Date()) {
-      window.alert('Please choose a date in the future');
-    } else if (selectedDates[0] > new Date()) {
-      refs.btnStart.disabled = false;
-    }
   },
 };
 
@@ -59,7 +67,3 @@ function convertMs(ms) {
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
 }
-
-// function stopTimer() {
-//   clearInterval(onClickStartTimer);
-// }
